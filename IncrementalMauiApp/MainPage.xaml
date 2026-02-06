@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="IncrementalMauiApp.MainPage">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="15">
+            <Label Text="Incremental Game" FontSize="28" HorizontalOptions="Center" />
+            <Label x:Name="GoldLabel" Text="Gold: 0" FontSize="20" />
+            <HorizontalStackLayout Padding="20" Spacing="15">
+                <Border Padding="10">
+                    <VerticalStackLayout>
+                        <Label Text="Miner" FontAttributes="Bold" />
+                        <Label x:Name="MinerCountLabel" Text="Owned:" />
+                        <Label x:Name="MinerCostLabel" Text="Cost:" />
+                        <Button Text="Buy Miner" Clicked="OnBuyMinerClicked" />
+                    </VerticalStackLayout>
+                </Border>
+                <Border Padding="10">
+                    <VerticalStackLayout>
+                        <Label Text="Drill" FontAttributes="Bold" />
+                        <Label x:Name="DrillCountLabel" Text="Owned:" />
+                        <Label x:Name="DrillCostLabel" Text="Cost:" />
+                        <Button Text="Buy Drill" Clicked="OnBuyDrillClicked" />
+                    </VerticalStackLayout>
+                </Border>
+                <Border Padding="10">
+                    <VerticalStackLayout>
+                        <Label Text="Excavator" FontAttributes="Bold" />
+                        <Label x:Name="ExcavatorCountLabel" Text="Owned:" />
+                        <Label x:Name="ExcavatorCostLabel" Text="Cost:" />
+                        <Button Text="Buy Excavator" Clicked="OnBuyExcavatorClicked" />
+                    </VerticalStackLayout>
+                </Border>
+            </HorizontalStackLayout>
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>
