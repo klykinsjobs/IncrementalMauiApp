@@ -2,24 +2,10 @@
 {
     public partial class MainPage : ContentPage
     {
-        public int Gold { get; set; } = 0;
-
-        public int MinerCount { get; set; } = 1;
-        public int DrillCount { get; set; } = 0;
-        public int ExcavatorCount { get; set; } = 0;
-
-        public int MinerCost { get; set; } = 10;
-        public int DrillCost { get; set; } = 50;
-        public int ExcavatorCost { get; set; } = 200;
-
-        private const int MinerRate = 1;
-        private const int DrillRate = 5;
-        private const int ExcavatorRate = 20;
+        private readonly GameEngine _engine = new();
 
         private PeriodicTimer? _timer;
         private CancellationTokenSource? _cts;
-
-        private bool _gameWon = false;
 
         public MainPage()
         {
@@ -29,18 +15,23 @@
         protected override void OnAppearing()
         {
             base.OnAppearing();
+
+            _engine.GameWonEvent += OnGameWon;
+
             _timer = new PeriodicTimer(TimeSpan.FromSeconds(1));
             _cts = new CancellationTokenSource();
-
             RunGameLoop(_cts.Token);
         }
 
         protected override void OnDisappearing()
         {
             base.OnDisappearing();
+
+            _engine.GameWonEvent -= OnGameWon;
+
             _cts?.Cancel();
             _cts?.Dispose();
-            _timer = null;
+            _timer?.Dispose();
         }
 
         private async void RunGameLoop(CancellationToken token)
@@ -51,73 +42,51 @@
 
                 while (await _timer.WaitForNextTickAsync(token))
                 {
-                    if (_gameWon)
-                        break;
-
-                    Gold += MinerCount * MinerRate;
-                    Gold += DrillCount * DrillRate;
-                    Gold += ExcavatorCount * ExcavatorRate;
-
-                    if (Gold >= 1_000_000 && !_gameWon)
-                    {
-                        _gameWon = true;
-                        _cts?.Cancel();
-                        await MainThread.InvokeOnMainThreadAsync(() => DisplayAlert("You Win!", "You reached 1,000,000 gold!", "OK"));
-                    }
-
+                    _engine.Tick();
                     await MainThread.InvokeOnMainThreadAsync(UpdateUI);
                 }
             }
             catch (OperationCanceledException)
             {
-                // Normal shutdown
             }
+        }
+
+        private async void OnGameWon()
+        {
+            _cts?.Cancel();
+
+            await MainThread.InvokeOnMainThreadAsync(() => DisplayAlert("You Win!", "You reached 1,000,000 gold!", "OK"));
         }
 
         private void OnBuyMinerClicked(object sender, EventArgs e)
         {
-            if (Gold >= MinerCost)
-            {
-                Gold -= MinerCost;
-                MinerCount++;
-                MinerCost = (int)(MinerCost * 1.15);
-                UpdateUI();
-            }
+            _engine.BuyMiner();
+            UpdateUI();
         }
 
         private void OnBuyDrillClicked(object sender, EventArgs e)
         {
-            if (Gold >= DrillCost)
-            {
-                Gold -= DrillCost;
-                DrillCount++;
-                DrillCost = (int)(DrillCost * 1.15);
-                UpdateUI();
-            }
+            _engine.BuyDrill();
+            UpdateUI();
         }
 
         private void OnBuyExcavatorClicked(object sender, EventArgs e)
         {
-            if (Gold >= ExcavatorCost)
-            {
-                Gold -= ExcavatorCost;
-                ExcavatorCount++;
-                ExcavatorCost = (int)(ExcavatorCost * 1.15);
-                UpdateUI();
-            }
+            _engine.BuyExcavator();
+            UpdateUI();
         }
 
         private void UpdateUI()
         {
-            GoldLabel.Text = $"Gold: {Gold}";
+            GoldLabel.Text = $"Gold: {_engine.Gold}";
 
-            MinerCountLabel.Text = $"Owned: {MinerCount}";
-            DrillCountLabel.Text = $"Owned: {DrillCount}";
-            ExcavatorCountLabel.Text = $"Owned: {ExcavatorCount}";
+            MinerCountLabel.Text = $"Owned: {_engine.MinerCount}";
+            DrillCountLabel.Text = $"Owned: {_engine.DrillCount}";
+            ExcavatorCountLabel.Text = $"Owned: {_engine.ExcavatorCount}";
 
-            MinerCostLabel.Text = $"Cost: {MinerCost}";
-            DrillCostLabel.Text = $"Cost: {DrillCost}";
-            ExcavatorCostLabel.Text = $"Cost: {ExcavatorCost}";
+            MinerCostLabel.Text = $"Cost: {_engine.MinerCost}";
+            DrillCostLabel.Text = $"Cost: {_engine.DrillCost}";
+            ExcavatorCostLabel.Text = $"Cost: {_engine.ExcavatorCost}";
         }
     }
 }
