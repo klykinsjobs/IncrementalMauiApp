@@ -1,6 +1,6 @@
 # IncrementalMauiApp
 
-A cross-platform incremental (idle) game built with C# and .NET MAUI. This micro-project demonstrates dynamic UI updates and a lightweight game loop using async / await.
+A cross-platform incremental (idle) game built with C# and .NET MAUI. This micro-project demonstrates dynamic UI updates, a lightweight game loop using async / await, and unit testing with xUnit.
 
 ## Looking for more?
 For a more in-depth example of my work, see my flagship project: [Game Elements](https://github.com/klykinsjobs/Game-Elements).
